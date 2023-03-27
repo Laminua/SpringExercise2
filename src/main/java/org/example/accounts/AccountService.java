@@ -1,37 +1,24 @@
 package org.example.accounts;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/users";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "1234";
-    private static Connection connection;
-
-    static {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    private final DataSource dataSource;
 
     public List<UserProfile> index() {
         List<UserProfile> usersList = new ArrayList<>();
 
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM UserProfile");
 
             while (resultSet.next()) {
@@ -51,7 +38,8 @@ public class AccountService {
 
     public void addUser(UserProfile profile) {
         int id = profile.hashCode();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO UserProfile VALUES(?, ?, ?)")) {
 
             preparedStatement.setInt(1, id);
@@ -68,7 +56,8 @@ public class AccountService {
     public UserProfile getUserById(int id) {
         UserProfile userProfile = null;
 
-        try (PreparedStatement preparedStatement =
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement =
                      connection.prepareStatement("SELECT * FROM UserProfile WHERE id=?")) {
 
             preparedStatement.setInt(1, id);
@@ -87,7 +76,8 @@ public class AccountService {
     }
 
     public void updateUser(int id, UserProfile profile) {
-        try (PreparedStatement preparedStatement =
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement =
                      connection.prepareStatement("UPDATE UserProfile SET name=?, email=? WHERE id=?")) {
 
             preparedStatement.setString(1, profile.getName());
@@ -101,7 +91,8 @@ public class AccountService {
     }
 
     public void deleteUserById(int id) {
-        try (PreparedStatement preparedStatement =
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement =
                      connection.prepareStatement("DELETE FROM UserProfile WHERE id=?")) {
 
             preparedStatement.setInt(1, id);
