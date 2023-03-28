@@ -19,6 +19,45 @@ public class UserController {
     private final AccountService accountService;
 
     @RequestMapping("/")
+    public String showLoginForm(Model model) {
+        log.info("Вызвана страница входа в систему");
+
+        String userName = "";
+        model.addAttribute("userName", userName);
+
+        return "login";
+    }
+
+    @RequestMapping("/login")
+    public RedirectView loginSubmit(@RequestParam String userName) {
+        log.info("Попытка входа в систему, пользователь: " + userName);
+
+        UserProfile userProfile = accountService.getUserByName(userName);
+        if (userProfile == null) {
+            return new RedirectView("/badLogin");
+        }
+        if (userProfile.getRole().toString().equals("ADMIN")) {
+            return new RedirectView("/showUsers");
+        } else {
+            return new RedirectView("/welcome");
+        }
+    }
+
+    @RequestMapping("/badLogin")
+    public String showBadLoginPage() {
+        log.info("Вызвана страница сообщения о неверно введённом логине (или такого пользователя нет)");
+
+        return "bad-login";
+    }
+
+    @RequestMapping("/welcome")
+    public String showWelcomePage() {
+        log.info("Вызвана страница \"welcome\" для пользователей уровня USER");
+
+        return "welcome";
+    }
+
+    @RequestMapping("/showUsers")
     public String showUsers(Model model) {
         log.info("Вызвана страница отображения списка пользователей");
         model.addAttribute("usersList", accountService.index());
@@ -44,7 +83,7 @@ public class UserController {
         }
         accountService.addUser(profile);
 
-        return new RedirectView("/");
+        return new RedirectView("/showUsers");
     }
 
     @RequestMapping("/deleteUser")
@@ -53,7 +92,7 @@ public class UserController {
 
         accountService.deleteUserById(id);
 
-        return new RedirectView("/");
+        return new RedirectView("/showUsers");
     }
 
     @RequestMapping("/updateUserForm")
@@ -72,6 +111,6 @@ public class UserController {
 
         accountService.updateUser(profile.getId(), profile);
 
-        return new RedirectView("/");
+        return new RedirectView("/showUsers");
     }
 }

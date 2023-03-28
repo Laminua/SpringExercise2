@@ -6,11 +6,13 @@ import lombok.Setter;
 
 import java.util.Objects;
 
-@Getter@Setter@NoArgsConstructor
+@Getter@Setter
+@NoArgsConstructor
 public class UserProfile {
+    private int id;
+    private Role role;
     private String name;
     private String email;
-    private int id;
 
     @Override
     public boolean equals(Object o) {
