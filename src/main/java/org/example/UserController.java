@@ -19,11 +19,8 @@ public class UserController {
     private final AccountService accountService;
 
     @RequestMapping("/")
-    public String showLoginForm(Model model) {
+    public String showLoginForm() {
         log.info("Вызвана страница входа в систему");
-
-        String userName = "";
-        model.addAttribute("userName", userName);
 
         return "login";
     }
