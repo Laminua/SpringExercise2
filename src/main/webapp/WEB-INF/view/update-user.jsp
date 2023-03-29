@@ -17,6 +17,8 @@
 
     <form:hidden path="id"/>
     <br><br>
+    Login <form:input path="login"/>
+    <br><br>
     Role <form:select path="role">
     <form:option value="ADMIN" label="ADMIN"/>
     <form:option value="USER" label="USER"/>

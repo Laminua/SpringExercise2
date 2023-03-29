@@ -13,9 +13,9 @@
 <br>
 <br>
 
-<form:form action="/login" modelAttribute="userName">
+<form:form action="/login">
 
-    Name <input type="text" name="userName"/>
+    Login <input type="text" name="userLogin"/>
     <br><br>
 
     <input type="submit" value="OK">

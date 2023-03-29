@@ -11,6 +11,8 @@
 <table border="1" width="20%" align="center">
     <caption><h2>List of users</h2></caption>
     <tr>
+        <th>ID</th>
+        <th>Login</th>
         <th>Role</th>
         <th>Name</th>
         <th>Email</th>
@@ -19,6 +21,8 @@
         <c:forEach var="user" items="${usersList}">
 
     <tr>
+        <td>${user.id}</td>
+        <td>${user.login}</td>
         <td>${user.role}</td>
         <td>${user.name}</td>
         <td>${user.email}</td>

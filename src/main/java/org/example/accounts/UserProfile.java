@@ -10,6 +10,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class UserProfile {
     private int id;
+    private String login;
     private Role role;
     private String name;
     private String email;

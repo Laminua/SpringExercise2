@@ -3,12 +3,14 @@ package org.example;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.accounts.AccountService;
+import org.example.accounts.Role;
 import org.example.accounts.UserProfile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
@@ -26,14 +28,14 @@ public class UserController {
     }
 
     @RequestMapping("/login")
-    public RedirectView loginSubmit(@RequestParam String userName) {
-        log.info("Попытка входа в систему, пользователь: " + userName);
+    public RedirectView loginSubmit(@RequestParam String userLogin) {
+        log.info("Попытка входа в систему, пользователь: " + userLogin);
 
-        UserProfile userProfile = accountService.getUserByName(userName);
+        UserProfile userProfile = accountService.getUserByLogin(userLogin);
         if (userProfile == null) {
             return new RedirectView("/badLogin");
         }
-        if (userProfile.getRole().toString().equals("ADMIN")) {
+        if (Role.ADMIN.equals(userProfile.getRole())) {
             return new RedirectView("/showUsers");
         } else {
             return new RedirectView("/welcome");
@@ -72,15 +74,29 @@ public class UserController {
     }
 
     @RequestMapping("/addUser")
-    public RedirectView addUsersToMap(@ModelAttribute("userProfile") UserProfile profile) {
-        log.info("Добавление пользователя в хранилище. Имя: " + profile.getName() + " Email: " + profile.getEmail());
+    public ModelAndView addUsersToMap(@ModelAttribute("userProfile") UserProfile profile) {
+        log.info("Добавление пользователя в хранилище. Login: "
+                + profile.getLogin()
+                + " Role: " + profile.getRole()
+                + " Имя: " + profile.getName()
+                + " Email: " + profile.getEmail());
 
         if (profile.getName().equals("")) {
-            return new RedirectView("/");
+            return new ModelAndView("redirect:/");
+        } else if (accountService.checkIfLoginExists(profile.getLogin())) {
+            return new ModelAndView("redirect:/userExists");
         }
+
         accountService.addUser(profile);
 
-        return new RedirectView("/showUsers");
+        return new ModelAndView("redirect:/showUsers");
+    }
+
+    @RequestMapping("/userExists")
+    public String showUserExistsMessage() {
+        log.info("Вызвана страница сообщения о существующем логине");
+
+        return "login-exists";
     }
 
     @RequestMapping("/deleteUser")

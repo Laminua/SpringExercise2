@@ -13,9 +13,11 @@
 <br>
 <br>
 
-<form:form action ="/addUser" modelAttribute="userProfile">
+<form:form action="/addUser" modelAttribute="userProfile">
 
     <form:hidden path="id"/>
+    <br><br>
+    Login <form:input path="login"/>
     <br><br>
     Role <form:select path="role">
     <form:option value="ADMIN" label="ADMIN"/>
