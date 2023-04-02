@@ -1,18 +1,30 @@
-package org.example.accounts;
+package org.example.accounts.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.Objects;
 
-@Getter@Setter
+@Getter
+@Setter
 @NoArgsConstructor
+@Entity
+@Table(name = "UserProfile")
 public class UserProfile {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "login")
     private String login;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
 
     @Override

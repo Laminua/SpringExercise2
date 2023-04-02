@@ -1,10 +1,11 @@
-package org.example;
+package org.example.controllers;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.accounts.AccountService;
-import org.example.accounts.Role;
-import org.example.accounts.UserProfile;
+import org.example.accounts.models.Role;
+import org.example.accounts.models.UserProfile;
+import org.example.dao.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,11 +15,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-@RequiredArgsConstructor
 @Slf4j
 public class UserController {
 
     private final AccountService accountService;
+
+    @Autowired
+    public UserController(@Qualifier("hibernateUserDAO") AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @RequestMapping("/")
     public String showLoginForm() {

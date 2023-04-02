@@ -1,6 +1,9 @@
-package org.example.accounts;
+package org.example.dao;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.accounts.models.Role;
+import org.example.accounts.models.UserProfile;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -10,11 +13,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService {
+@Slf4j
+public class JdbcUserDAO implements AccountService{
 
     private final DataSource dataSource;
 
     public List<UserProfile> index() {
+        UserProfile userProfile;
         List<UserProfile> usersList = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -22,17 +27,12 @@ public class AccountService {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM UserProfile");
 
             while (resultSet.next()) {
-                UserProfile userProfile = new UserProfile();
-
-                userProfile.setId(resultSet.getInt("id"));
-                userProfile.setLogin(resultSet.getString("login"));
-                userProfile.setRole(Role.valueOf(resultSet.getString("role")));
-                userProfile.setName(resultSet.getString("name"));
-                userProfile.setEmail(resultSet.getString("email"));
-
+                userProfile = setUserProfileFieldsFromResultSet(resultSet);
                 usersList.add(userProfile);
             }
+
         } catch (SQLException e) {
+            log.error("Ошибка при попытке запроса списка пользователей из базы данных");
             e.printStackTrace();
         }
         return usersList;
@@ -50,6 +50,7 @@ public class AccountService {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            log.error("Ошибка при попытке добавления пользователя в базу данных");
             e.printStackTrace();
         }
     }
@@ -66,13 +67,10 @@ public class AccountService {
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
 
-            userProfile = new UserProfile();
-            userProfile.setId(resultSet.getInt("id"));
-            userProfile.setLogin(resultSet.getString("login"));
-            userProfile.setRole(Role.valueOf(resultSet.getString("role")));
-            userProfile.setName(resultSet.getString("name"));
-            userProfile.setEmail(resultSet.getString("email"));
+            userProfile = setUserProfileFieldsFromResultSet(resultSet);
+
         } catch (SQLException e) {
+            log.error("Ошибка при попытке получения пользователя по ID из базы данных");
             e.printStackTrace();
         }
         return userProfile;
@@ -92,6 +90,7 @@ public class AccountService {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            log.error("Ошибка при попытке обновления пользователя в базе данных");
             e.printStackTrace();
         }
     }
@@ -105,6 +104,7 @@ public class AccountService {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            log.error("Ошибка при попытке удаления пользователя из базы данных");
             e.printStackTrace();
         }
     }
@@ -119,17 +119,13 @@ public class AccountService {
             preparedStatement.setString(1, login);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next() == false) {
+            if (!resultSet.next()) {
                 return userProfile;
             }
+            userProfile = setUserProfileFieldsFromResultSet(resultSet);
 
-            userProfile = new UserProfile();
-            userProfile.setId(resultSet.getInt("id"));
-            userProfile.setLogin(resultSet.getString("login"));
-            userProfile.setRole(Role.valueOf(resultSet.getString("role")));
-            userProfile.setName(resultSet.getString("name"));
-            userProfile.setEmail(resultSet.getString("email"));
         } catch (SQLException e) {
+            log.error("Ошибка при попытке получения пользователя по логину из базы данных");
             e.printStackTrace();
         }
         return userProfile;
@@ -147,8 +143,20 @@ public class AccountService {
                 return true;
             }
         } catch (SQLException e) {
+            log.error("Ошибка при попытке проверки наличия логина в базе данных");
             e.printStackTrace();
         }
         return false;
+    }
+
+    private UserProfile setUserProfileFieldsFromResultSet(ResultSet resultSet) throws SQLException {
+        UserProfile userProfile = new UserProfile();
+        userProfile.setId(resultSet.getInt("id"));
+        userProfile.setLogin(resultSet.getString("login"));
+        userProfile.setRole(Role.valueOf(resultSet.getString("role")));
+        userProfile.setName(resultSet.getString("name"));
+        userProfile.setEmail(resultSet.getString("email"));
+
+        return userProfile;
     }
 }
