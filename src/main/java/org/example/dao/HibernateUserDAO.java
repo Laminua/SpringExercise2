@@ -3,12 +3,13 @@ package org.example.dao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.accounts.models.UserProfile;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 @Service
@@ -16,68 +17,63 @@ import java.util.List;
 @Slf4j
 public class HibernateUserDAO implements AccountService {
 
-    private final SessionFactory sessionFactory;
+    private final EntityManager entityManager;
+
+    @Autowired
+    public HibernateUserDAO(SessionFactory sessionFactory) {
+        this.entityManager = sessionFactory.createEntityManager();
+    }
 
     public List<UserProfile> index() {
         List<UserProfile> userProfiles = null;
 
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
-
         try {
-            transaction.begin();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
 
-            userProfiles = session.createQuery("SELECT u from UserProfile u", UserProfile.class)
+            userProfiles = entityManager.createQuery("SELECT u from UserProfile u", UserProfile.class)
                     .getResultList();
 
-            transaction.commit();
-        } catch (HibernateException e) {
+            entityManager.getTransaction().commit();
+        } catch (PersistenceException e) {
             log.error("Ошибка при получении списка пользователей из базы данных");
             e.printStackTrace();
-            transaction.rollback();
-        } finally {
-            session.close();
         }
         return userProfiles;
     }
 
     public void addUser(UserProfile profile) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
 
         try {
-            transaction.begin();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
 
-            session.save(profile);
+            entityManager.persist(profile);
 
-            transaction.commit();
-        } catch (HibernateException e) {
+            entityManager.getTransaction().commit();
+        } catch (PersistenceException e) {
             log.error("Ошибка при добавлении пользователя в базу данных");
             e.printStackTrace();
-            transaction.rollback();
-        } finally {
-            session.close();
+            entityManager.getTransaction().rollback();
         }
     }
 
     public UserProfile getUserById(int id) {
         UserProfile userProfile = null;
 
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
-
         try {
-            transaction.begin();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
 
-            userProfile = session.get(UserProfile.class, id);
+            userProfile = entityManager.find(UserProfile.class, id);
 
-            transaction.commit();
-        } catch (HibernateException e) {
+            entityManager.detach(userProfile);
+        } catch (PersistenceException e) {
             log.error("Ошибка при получении пользователя по ID из базы данных");
             e.printStackTrace();
-            transaction.rollback();
-        } finally {
-            session.close();
         }
         return userProfile;
     }
@@ -85,70 +81,63 @@ public class HibernateUserDAO implements AccountService {
     public void updateUser(int id, UserProfile profile) {
         UserProfile userProfile = null;
 
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
-
         try {
-            transaction.begin();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
 
-            userProfile = session.get(UserProfile.class, id);
+            userProfile = entityManager.find(UserProfile.class, id);
 
             userProfile.setLogin(profile.getLogin());
             userProfile.setRole(profile.getRole());
             userProfile.setName(profile.getName());
             userProfile.setEmail(profile.getEmail());
 
-            session.save(userProfile);
+            entityManager.persist(userProfile);
 
-            transaction.commit();
-        } catch (HibernateException e) {
+            entityManager.getTransaction().commit();
+        } catch (PersistenceException e) {
             log.error("Ошибка при обновлении пользователя в базе данных");
             e.printStackTrace();
-            transaction.rollback();
-        } finally {
-            session.close();
+            entityManager.getTransaction().rollback();
         }
     }
 
     public void deleteUserById(int id) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
 
         try {
-            transaction.begin();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
 
-            session.delete(session.get(UserProfile.class, id));
+            entityManager.remove(entityManager.find(UserProfile.class, id));
 
-            transaction.commit();
-        } catch (HibernateException e) {
+            entityManager.getTransaction().commit();
+        } catch (PersistenceException e) {
             log.error("Ошибка при удалении пользователя из базы данных");
             e.printStackTrace();
-            transaction.rollback();
-        } finally {
-            session.close();
+            entityManager.getTransaction().rollback();
         }
     }
 
     public UserProfile getUserByLogin(String login) {
         UserProfile userProfile = null;
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
 
         try {
-            transaction.begin();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
 
-            userProfile = session.createQuery("from UserProfile where login=:login",
+            userProfile = entityManager.createQuery("from UserProfile where login=:login",
                             UserProfile.class)
-                    .setParameter("login", login)
-                    .uniqueResult();
+                    .setParameter("login", login).getSingleResult();
 
-            transaction.commit();
-        } catch (HibernateException e) {
+            entityManager.getTransaction().commit();
+        } catch (NoResultException e) {
+            return null;
+        } catch (PersistenceException e) {
             log.error("Ошибка при получении пользователя по логину из базы данных");
             e.printStackTrace();
-            transaction.rollback();
-        } finally {
-            session.close();
         }
         return userProfile;
     }
@@ -157,7 +146,7 @@ public class HibernateUserDAO implements AccountService {
         UserProfile userProfile = null;
         try {
             userProfile = getUserByLogin(login);
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             log.error("Ошибка при проверке наличия логина в базе данных");
             e.printStackTrace();
         }
