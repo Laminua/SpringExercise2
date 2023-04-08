@@ -8,15 +8,16 @@
 
 <body>
 
-<h2>Please enter your login</h2>
+<h2>Please enter your login and password</h2>
 
 <br>
 <br>
 
-<form:form action="/login">
+<form:form action="/process_login">
 
-    Login <input type="text" name="userLogin"/>
+    Username: <input type="text" name="username" id="username"/>
     <br><br>
+    Password: <input type="password" name="password" id="password">
 
     <input type="submit" value="OK">
 

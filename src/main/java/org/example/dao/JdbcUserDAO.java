@@ -43,7 +43,7 @@ public class JdbcUserDAO implements AccountService{
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "INSERT INTO UserProfile(login, role, name, email) VALUES(?, ?, ?, ?)")) {
 
-            preparedStatement.setString(1, profile.getLogin());
+            preparedStatement.setString(1, profile.getUsername());
             preparedStatement.setString(2, profile.getRole().toString());
             preparedStatement.setString(3, profile.getName());
             preparedStatement.setString(4, profile.getEmail());
@@ -82,7 +82,7 @@ public class JdbcUserDAO implements AccountService{
                      connection.prepareStatement(
                              "UPDATE UserProfile SET login=?, role=?, name=?, email=? WHERE id=?")) {
 
-            preparedStatement.setString(1, profile.getLogin());
+            preparedStatement.setString(1, profile.getUsername());
             preparedStatement.setString(2, profile.getRole().toString());
             preparedStatement.setString(3, profile.getName());
             preparedStatement.setString(4, profile.getEmail());
@@ -152,7 +152,7 @@ public class JdbcUserDAO implements AccountService{
     private UserProfile setUserProfileFieldsFromResultSet(ResultSet resultSet) throws SQLException {
         UserProfile userProfile = new UserProfile();
         userProfile.setId(resultSet.getInt("id"));
-        userProfile.setLogin(resultSet.getString("login"));
+        userProfile.setUsername(resultSet.getString("login"));
         userProfile.setRole(Role.valueOf(resultSet.getString("role")));
         userProfile.setName(resultSet.getString("name"));
         userProfile.setEmail(resultSet.getString("email"));

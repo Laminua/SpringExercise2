@@ -88,7 +88,8 @@ public class HibernateUserDAO implements AccountService {
 
             userProfile = entityManager.find(UserProfile.class, id);
 
-            userProfile.setLogin(profile.getLogin());
+            userProfile.setUsername(profile.getUsername());
+            userProfile.setPassword(profile.getPassword());
             userProfile.setRole(profile.getRole());
             userProfile.setName(profile.getName());
             userProfile.setEmail(profile.getEmail());
@@ -120,7 +121,7 @@ public class HibernateUserDAO implements AccountService {
         }
     }
 
-    public UserProfile getUserByLogin(String login) {
+    public UserProfile getUserByLogin(String username) {
         UserProfile userProfile = null;
 
         try {
@@ -128,9 +129,9 @@ public class HibernateUserDAO implements AccountService {
                 entityManager.getTransaction().begin();
             }
 
-            userProfile = entityManager.createQuery("from UserProfile where login=:login",
+            userProfile = entityManager.createQuery("from UserProfile where username=:username",
                             UserProfile.class)
-                    .setParameter("login", login).getSingleResult();
+                    .setParameter("username", username).getSingleResult();
 
             entityManager.getTransaction().commit();
         } catch (NoResultException e) {

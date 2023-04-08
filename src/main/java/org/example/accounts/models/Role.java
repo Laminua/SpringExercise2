@@ -1,6 +1,7 @@
 package org.example.accounts.models;
 
 public enum Role {
-    ADMIN,
-    USER
+    ROLE_ADMIN,
+    ROLE_USER
 }
+

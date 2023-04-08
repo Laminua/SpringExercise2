@@ -13,15 +13,17 @@
 <br>
 <br>
 
-<form:form action="/updateUser" modelAttribute="userProfile">
+<form:form action="/admin/updateUser" modelAttribute="userProfile">
 
     <form:hidden path="id"/>
     <br><br>
-    Login <form:input path="login"/>
+    Username <form:input path="username"/>
+    <br><br>
+    Password <form:input path="password"/>
     <br><br>
     Role <form:select path="role">
-    <form:option value="ADMIN" label="ADMIN"/>
-    <form:option value="USER" label="USER"/>
+    <form:option value="ROLE_ADMIN" label="ADMIN"/>
+    <form:option value="ROLE_USER" label="USER"/>
 </form:select>
     <br><br>
     Name <form:input path="name"/>
@@ -32,7 +34,7 @@
     <input type="submit" value="OK">
 
 </form:form>
-<form action="/showUsers" target="_blank">
+<form action="/admin/showUsers" target="_blank">
     <button>Back</button>
 </form>
 

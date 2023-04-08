@@ -6,6 +6,6 @@
 <body>
 
 This login already exists in database
-<a href="/addUserForm">Back to add user form</a>
+<a href="/admin/addUserForm">Back to add user form</a>
 </body>
 </html>

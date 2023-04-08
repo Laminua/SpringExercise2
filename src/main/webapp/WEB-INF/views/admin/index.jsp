@@ -22,13 +22,13 @@
 
     <tr>
         <td>${user.id}</td>
-        <td>${user.login}</td>
+        <td>${user.username}</td>
         <td>${user.role}</td>
         <td>${user.name}</td>
         <td>${user.email}</td>
         <td>
-            <a href="/deleteUser?userIdToDelete=${user.id}">delete</a>
-            <a href="/updateUserForm?userIdToUpdate=${user.id}">update</a>
+            <a href="/admin/deleteUser?userIdToDelete=${user.id}">delete</a>
+            <a href="/admin/updateUserForm?userIdToUpdate=${user.id}">update</a>
         </td>
 
         </c:forEach>
@@ -36,8 +36,8 @@
     </tr>
 </table>
 
-<a href="/addUserForm"><p style="text-align: center">Add user</p></a>
-<a href="/"><p style="text-align: center">Back to login form</p></a>
+<a href="/admin/addUserForm"><p style="text-align: center">Add user</p></a>
+<a href="/logout"><p style="text-align: center">LOGOUT</p></a>
 </body>
 
 </html>
