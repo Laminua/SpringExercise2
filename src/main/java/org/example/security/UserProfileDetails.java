@@ -1,5 +1,6 @@
 package org.example.security;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.example.accounts.models.UserProfile;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RequiredArgsConstructor
+@Getter
 public class UserProfileDetails implements UserDetails {
     private final UserProfile userProfile;
 
@@ -46,10 +48,5 @@ public class UserProfileDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    // Нужно, чтобы получать данные аутентифицированного пользователя
-    public UserProfile getUserProfile() {
-        return this.userProfile;
     }
 }

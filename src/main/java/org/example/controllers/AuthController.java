@@ -12,14 +12,14 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage() {
-        log.info("Вызвана страница аутентификации");
+        log.info("Authentication page has been requested");
 
         return "auth/login";
     }
 
     @GetMapping("/badLogin")
     public String showBadLoginPage() {
-        log.info("Вызвана страница сообщения о неверно введённом логине (или такого пользователя нет)");
+        log.info("Incorrect credentials message page has been requested");
 
         return "auth/bad-login";
     }

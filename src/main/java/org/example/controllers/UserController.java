@@ -10,7 +10,7 @@ public class UserController {
 
     @RequestMapping("/welcome")
     public String showWelcomePage() {
-        log.info("Вызвана страница \"welcome\" для пользователей уровня USER");
+        log.info("Welcome page for access level \"USER\" has been requested");
 
         return "welcome";
     }

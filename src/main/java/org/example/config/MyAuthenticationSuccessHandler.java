@@ -1,5 +1,6 @@
 package org.example.config;
 
+import org.example.accounts.models.Role;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -18,7 +19,10 @@ import java.util.Map;
 
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    Map<String, String> roleTargetUrlMap;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
@@ -37,9 +41,9 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
 
     protected String determineTargetUrl(final Authentication authentication) {
 
-        Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ROLE_USER", "/welcome");
-        roleTargetUrlMap.put("ROLE_ADMIN", "/admin/showUsers");
+        roleTargetUrlMap = new HashMap<>();
+        roleTargetUrlMap.put(Role.ROLE_USER.toString(), "/welcome");
+        roleTargetUrlMap.put(Role.ROLE_ADMIN.toString(), "/admin/showUsers");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {

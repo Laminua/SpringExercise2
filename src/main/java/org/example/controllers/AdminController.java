@@ -25,7 +25,7 @@ public class AdminController {
 
     @RequestMapping("/admin/showUsers")
     public String showUsers(Model model) {
-        log.info("Вызвана страница отображения списка пользователей");
+        log.info("Showing \"List of users\" page");
         model.addAttribute("usersList", accountService.index());
 
         return "admin/index";
@@ -33,7 +33,7 @@ public class AdminController {
 
     @RequestMapping("/admin/addUserForm")
     public String showAddUserForm(Model model) {
-        log.info("Вызвана страница добавления пользователя");
+        log.info("Showing \"Add user\" page");
 
         model.addAttribute("userProfile", new UserProfile());
 
@@ -42,7 +42,7 @@ public class AdminController {
 
     @RequestMapping("/admin/addUser")
     public ModelAndView addUsersToMap(@ModelAttribute("userProfile") UserProfile profile) {
-        log.info("Добавление пользователя в хранилище. Login: "
+        log.info("Inserting user into database. Login: "
                 + profile.getUsername()
                 + " Role: " + profile.getRole()
                 + " Имя: " + profile.getName()
@@ -61,14 +61,14 @@ public class AdminController {
 
     @RequestMapping("/admin/userExists")
     public String showUserExistsMessage() {
-        log.info("Вызвана страница сообщения о существующем логине");
+        log.info("Showing \"User already exist\" page");
 
         return "admin/login-exists";
     }
 
     @RequestMapping("/admin/deleteUser")
     public RedirectView deleteUserFromMap(@RequestParam("userIdToDelete") int id) {
-        log.info("Удаление пользователя, ID: " + id);
+        log.info("Removing user from database, ID: " + id);
 
         accountService.deleteUserById(id);
 
@@ -77,7 +77,7 @@ public class AdminController {
 
     @RequestMapping("/admin/updateUserForm")
     public String showUpdateUserForm(@RequestParam("userIdToUpdate") int id, Model model) {
-        log.info("Вызвана страница обновления данных пользователя ID: " + id);
+        log.info("Showing \"update user\" page, user ID: " + id);
 
         UserProfile userProfile = accountService.getUserById(id);
         model.addAttribute("userProfile", userProfile);
@@ -87,7 +87,7 @@ public class AdminController {
 
     @RequestMapping("/admin/updateUser")
     public RedirectView updateUser(UserProfile profile) {
-        log.info("Обновление данных пользователя. Name: " + profile.getName() + " Email: " + profile.getEmail());
+        log.info("Updating user in database. Name: " + profile.getName() + " Email: " + profile.getEmail());
 
         accountService.updateUser(profile.getId(), profile);
 

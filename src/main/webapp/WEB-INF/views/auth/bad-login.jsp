@@ -5,7 +5,7 @@
 
 <body>
 
-User not found!
+Incorrect username and/or password!
 
 <a href="/">Back to login form</a>
 </body>
